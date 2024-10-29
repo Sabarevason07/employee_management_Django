@@ -19,7 +19,7 @@ Repository: [Sabarevason07/employee_management_Django](https://github.com/Sabare
 
 - **Back-End**: Django
 - **Front-End**: HTML, CSS, JavaScript
-- **Database**: SQLite (default) - can be configured to any preferred database like PostgreSQL or MySQL
+- **Database**: MySQL
 - **Machine Learning**: Face recognition model for employee attendance
 - **Other Libraries**: `qrcode` for QR code generation, `dlib` and `face_recognition` for facial recognition
 
