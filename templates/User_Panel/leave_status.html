@@ -1,0 +1,42 @@
+{% extends "index.html" %}
+
+{% block title %}
+    Leave Request
+{% endblock title %}
+
+{% block content %}
+
+<h3 class="page-header text-primary text-center" style="padding-top: 5%; ">Your Leave Requests</h3>
+<div class="d-flex justify-content-center pt-5">
+    <div class="col-md-offset-1 col-md-10">
+
+        <table class="table table-striped"  style="padding-left: 55%;">
+            <thead>
+                <tr>
+                    <th>Start Date</th>
+                    <th>End Date</th>
+                    <th>Reason</th>
+                    <th>Status</th>
+                    {% if is_reject %}
+                        <th>Admin Comments</th>
+                    {% endif %}
+                </tr>
+            </thead>
+            <tbody>
+                {% for leave in leave_requests %}
+                <tr {% if leave.status == 'Approved' %} class="table-success" {% elif leave.status == 'Rejected' %} class="table-danger" {% endif %}>
+                    <td>{{ leave.start_date }}</td>
+                    <td>{{ leave.end_date }}</td>
+                    <td>{{ leave.reason }}</td>
+                    <td>{{ leave.status }}</td>
+                    {% if is_reject %}
+                        <td>{{ leave.admin_comments }}</td>
+                    {% endif %}
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+
+    </div>
+</div>
+{% endblock content %}

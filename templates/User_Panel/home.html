@@ -1,0 +1,168 @@
+{% extends "index.html" %}
+
+{% block title %}
+  Home Page
+{% endblock title %}
+
+{% block content %}
+    {% if user.is_authenticated and user.is_superuser %}
+        <!-- Superuser View -->
+        <h3 class="page-header text-primary" style="padding-top: 5%; padding-left: 43%; display: flex;">All Employee Details 
+            <a href="{% url 'notify' %}" style="padding-left: 70%;">
+            <i class="fa fa-bell shake-on-hover"></i>
+        </a>
+        </h3>
+
+        <div class="d-flex justify-content-center pt-5">
+            <div class="col-md-offset-1 col-md-10">
+                {% if data %}
+                <table class="table table-striped">
+                    {% if messages %}
+                    {% for message in messages %}
+                        <div class="alert alert-{{ message.tags }}">
+                            {{ message }}
+                        </div>
+                    {% endfor %}
+                    {% endif %}
+                    <input type="search" class="pull-right" id="search" placeholder=" search..." style="border-radius: 5px; border-color: gold; color: green;">
+                    <thead>
+                        <tr>
+                            <th scope="col">S.no</th>
+                            <th scope="col">Emp ID</th>
+                            <th scope="col">Profile Picture</th>
+                            <th scope="col">Email</th>
+                            <th scope="col">First Name</th>
+                            <th scope="col">Last Name</th>
+                            <th scope="col">Age</th>
+                            <th scope="col">Department</th>
+                            <th scope="col">Address</th>
+                            <th scope="col">View</th>
+                            <th scope="col">Update</th>
+                            <th scope="col">Delete</th>
+                        </tr>
+                    </thead>
+                    <tbody id="table">
+                        {% for rows in data %}
+                        <tr>
+                            <td>{{ forloop.counter }}</td>
+                            <td>{{ rows.EmpId }}</td>
+                            <td>
+                                {% if rows.ProfilePicture %}
+                                <img src="{{ rows.ProfilePicture.url }}" alt="Profile Picture" class="img-thumbnail" style="width:50px; height:50px;">
+                                {% else %}
+                                No Image
+                                {% endif %}
+                            </td>
+                            <td>{{ rows.Email }}</td>
+                            <td>{{ rows.FirstName }}</td>
+                            <td>{{ rows.LastName }}</td>
+                            <td>{{ rows.Age }}</td>
+                            <td>{{ rows.Department }}</td>
+                            <td>{{ rows.Address }}</td>
+                            <td><a class="btn btn-primary" href="/view/{{ rows.id }}">View</a></td>
+                            <td><a class="btn btn-warning" href="/update/{{ rows.id }}">Update</a></td>
+                            <td><a class="btn btn-danger" href="/delete/{{ rows.id }}">Delete</a></td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+                <form action="{% url 'Add_Employee' %}" autocomplete="off" method="POST">
+                    {% csrf_token %}
+                    <input type="submit" value="Add employee" class="pull-left" style="background-color: rgb(22, 140, 213); color: white; margin-top: 10px; border-radius: 7px;">
+                </form>
+                {% endif %}
+            </div>
+        </div>
+    
+    {% else %}
+        <!-- Regular User View -->
+        <div class="d-flex justify-content-center pt-5">
+        <h1 class="display-4 custom-welcome" style="padding-top: 10%; padding-bottom: 3%; padding-left: 43%; display: flex;">Welcome, {{ user.username }}!</h1>
+            <div class="col-md-offset-1 col-md-10">
+                {% if messages %}
+                    {% for message in messages %}
+                        <div class="alert alert-{{ message.tags }}">
+                            {{ message }}
+                        </div>
+                    {% endfor %}
+                {% endif %}
+                
+                <div class="row text-center">
+                    <!-- Total Leave Applied Card -->
+                    <div class="col-md-6 mb-4">
+                        <div class="card border-light shadow-sm" style="border-radius: 15px; height: 250px;">
+                            <div class="card-body d-flex flex-column justify-content-between">
+                                <div class="d-flex align-items-center">
+                                    <i class="fas fa-calendar-check fa-2x me-3" style="color: #007bff;"></i>
+                                    <h2 class="card-title">Total Leave Applied</h2>
+                                </div>
+                                <p class="lead" style="font-size: 2rem; color: #007bff;">{{ count }}</p>
+                            </div>
+                        </div>
+                    </div>
+                
+                    <!-- Total Tasks Assigned Card -->
+                    <div class="col-md-6 mb-4">
+                        <div class="card border-light shadow-sm" style="border-radius: 15px; height: 250px;">
+                            <div class="card-body d-flex flex-column justify-content-between">
+                                <div class="d-flex align-items-center">
+                                    <i class="fas fa-money-bill-wave fa-2x me-3" style="color: #28a745;"></i>
+                                    <h2 class="card-title">Your Awarded Wages</h2>
+                                </div>
+                                <div>
+                                    <h5>Date: {{ today_wage.date }}</h5>
+                                    {% if today_wage %}
+                                        <p class="lead" style="font-size: 2rem; color: #28a745;">Wage Amount: {{ today_wage.wage_amount }}</p>
+                                    {% else %}
+                                        <p>No wages have been awarded yet or no employee found with this email.</p>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    
+    {% endif %}
+    <style>
+        .custom-welcome {
+            font-weight: bold;
+            color: #007bff; /* Change this to your desired color */
+            margin-top: 5rem; /* Vertical spacing */
+        }
+
+        .custom-lead {
+            color: #555; /* Change this to your desired lead text color */
+            font-size: 1.2rem; /* Slightly larger font size */
+        }
+        @keyframes shake {
+  0% { transform: translate(1px, 1px) rotate(0deg); }
+  10% { transform: translate(-1px, -2px) rotate(-1deg); }
+  20% { transform: translate(-3px, 0px) rotate(1deg); }
+  30% { transform: translate(3px, 2px) rotate(0deg); }
+  40% { transform: translate(1px, -1px) rotate(1deg); }
+  50% { transform: translate(-1px, 2px) rotate(-1deg); }
+  60% { transform: translate(-3px, 1px) rotate(0deg); }
+  70% { transform: translate(3px, 1px) rotate(-1deg); }
+  80% { transform: translate(-1px, -1px) rotate(1deg); }
+  90% { transform: translate(1px, 2px) rotate(0deg); }
+  100% { transform: translate(1px, -2px) rotate(-1deg); }
+}
+
+.shake-on-hover:hover {
+  animation: shake 0.5s;
+  animation-iteration-count: 2;
+}
+    </style>
+    <script>
+        $(document).ready(function() {
+            $('#search').keyup(function() {
+                var value = $(this).val().toLowerCase();
+                $('#table tr').filter(function() {
+                    $(this).toggle($(this).text().toLowerCase().indexOf(value) > -1);
+                });
+            });
+        });
+    </script>
+{% endblock %}

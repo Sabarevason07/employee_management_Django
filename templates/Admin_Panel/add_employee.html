@@ -1,0 +1,90 @@
+{% extends "index.html" %}
+{% load crispy_forms_tags %}
+
+{% block title %}
+   Add Employee 
+{% endblock title %}
+
+{% block content %}
+{% if employee  %}
+    <div class="container-fluid" style="margin-top:100px;">
+        <div class="col-md-offset-4 col-md-4">
+            <h2 class="text-danger page-header text-center">Profile Already Created</h2>
+            <p class="text-center">You have already created your profile. If you need to make changes, please contact an administrator.</p>
+        </div>  
+    </div>
+{% else %}
+    {% if user.is_superuser or user.is_staff  %}
+    <div class="container-fluid" style="margin-top:100px;">
+        <div class="col-md-offset-4 col-md-4">
+            {% if user.is_superuser %}
+                <h2 class="text-primary page-header text-center">Add Employees Profiles</h2>
+            {% else %}
+                <h2 class="text-danger page-header text-center">Create Your Profile</h2>
+            {% endif %}
+        </div>   
+        <div class="col-md-offset-4 col-md-4 well">
+            <form action="{% url 'add' %}" method="POST" enctype="multipart/form-data">
+                {% csrf_token %}
+                <div class="form-group">
+                    <label for="empid">Emp ID</label>
+                    <input type="number" name="empid" class="form-control" placeholder="Enter Employee ID" required>
+                </div>
+                <div class="form-group">
+                    <label for="email">Email</label>
+                    <input type="email" name="email" class="form-control" placeholder="Enter Email" required>
+                </div>
+                <div class="form-group">
+                    <label for="firstname">First Name</label>
+                    <input type="text" name="firstname" class="form-control" placeholder="Enter First Name" required>
+                </div>
+                <div class="form-group">
+                    <label for="lastname">Last Name</label>
+                    <input type="text" name="lastname" class="form-control" placeholder="Enter Last Name" required>
+                </div>
+                <div class="form-group">
+                    <label for="age">Age</label>
+                    <input type="number" name="age" class="form-control" placeholder="Enter Age" required>
+                </div>
+                <div class="form-group">
+                    <label for="department">Department</label>
+                    <select name="department" class="form-control" required>
+                        <option value="" disabled selected>Select Department</option>
+                        <option value="Human Resources">Human Resources</option>
+                        <option value="Finance">Finance</option>
+                        <option value="Engineering">Engineering</option>
+                        <option value="Sales">Sales</option>
+                        <option value="Marketing">Marketing</option>
+                        <option value="Customer Service">Customer Service</option>
+                        <option value="IT Support">IT Support</option>
+                        <option value="Legal">Legal</option>
+                        <option value="Operations">Operations</option>
+                        <option value="Research and Development">Research and Development</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="address">Address</label>
+                    <input type="text" name="address" class="form-control" placeholder="Enter Address" required>
+                </div>
+                <div class="form-group">
+                    <label for="profilepicture">Profile Picture</label>
+                    <input type="file" name="profilepicture" class="form-control" required>
+                </div>
+                <div class="form-group">
+                    <label for="ctc">CTC</label>
+                    <input type="number" name="CTC" class="form-control" step="0.01" required>
+                </div>
+                <div class="form-group">
+                    <label for="GrossSalary">Gross Salary</label>
+                    <input type="number" name="GrossSalary" class="form-control" step="0.01" required>
+                </div>
+                <input type="submit" value="Submit" style="background-color: rgb(22, 140, 213); color: white; margin-top: 10px; border-radius: 7px;">
+                <input type="reset" value="Reset" style="background-color: red; color: white; border-radius: 7px;">
+            </form>
+        </div>
+    </div>
+
+    {% endif %}
+{% endif %}
+
+{% endblock content %}

@@ -1,0 +1,161 @@
+{% extends "index.html" %}
+
+{% block title %}
+My Tasks
+{% endblock title %}
+
+{% block content %}
+<style>
+    @import url('https://fonts.googleapis.com/css?family=Muli&display=swap');
+
+    * {
+        box-sizing: border-box;
+    }
+
+    body {
+        background-image: linear-gradient(45deg, #fdff91, #f8ff6e);
+        font-family: 'Muli', sans-serif;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-direction: column;
+        min-height: 100vh;
+        margin: 0;
+    }
+
+    .courses-container {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        width: 100%;
+    }
+
+    .course {
+        background-color: #fff;
+        border-radius: 10px;
+        box-shadow: 0 10px 10px rgba(0, 0, 0, 0.2);
+        display: flex;
+        max-width: 100%;
+        margin: 20px;
+        overflow: hidden;
+        width: 700px;
+    }
+
+    .course h6 {
+        opacity: 0.6;
+        margin: 0;
+        letter-spacing: 1px;
+        text-transform: uppercase;
+    }
+
+    .course h2 {
+        letter-spacing: 1px;
+        margin: 10px 0;
+    }
+
+    .course-preview {
+        background-color: #2A265F;
+        color: #fff;
+        padding: 30px;
+        max-width: 250px;
+    }
+
+    .course-preview a {
+        color: #fff;
+        display: inline-block;
+        font-size: 12px;
+        opacity: 0.6;
+        margin-top: 30px;
+        text-decoration: none;
+    }
+
+    .course-info {
+        padding: 30px;
+        position: relative;
+        width: 100%;
+    }
+
+
+    .task-description {
+    font-size: 14px; 
+    color: #004912; 
+    margin: 5px 0; 
+}
+
+</style>
+
+<div class="container-fluid" style="margin-top:100px;">
+    <div class="col-md-offset-4 col-md-4">
+        <h2 class="text-primary page-header text-center">My Tasks</h2>
+    </div>
+    <div class="courses-container">
+        {% for task in tasks %}
+        <div class="course">
+            <div class="course-preview">
+                <h6>Task</h6>
+                <h2 style="color: #fff7f7;">{{ task.title }}</h2>
+              
+            </div>
+            <div class="course-info">
+                <h6 style="font-size: 14px; color: #e90404;">Due Date</h6> <!-- Minimized Due Date -->
+                <h2 class="text-muted" style="font-size: 16px;">{{ task.due_date }}</h2> <!-- Adjusted Font Size -->
+                <p class="task-description">{{ task.description }}</p>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+
+<button class="floating-btn">
+    Get in Touch
+</button>
+
+<div class="social-panel-container">
+    <div class="social-panel">
+        <p>Created with <i class="fa fa-heart"></i> by sabarevason</p>
+        <button class="close-btn"><i class="fas fa-times"></i></button>
+        <h4>Get in touch on</h4>
+        <ul>
+            <li>
+                <a href="#" target="_blank">
+                    <i class="fab fa-discord"></i>
+                </a>
+            </li>
+            <li>
+                <a href="#" target="_blank">
+                    <i class="fab fa-twitter"></i>
+                </a>
+            </li>
+            <li>
+                <a href="#" target="_blank">
+                    <i class="fab fa-linkedin"></i>
+                </a>
+            </li>
+            <li>
+                <a href="#" target="_blank">
+                    <i class="fab fa-facebook"></i>
+                </a>
+            </li>
+            <li>
+                <a href="#" target="_blank">
+                    <i class="fab fa-instagram"></i>
+                </a>
+            </li>
+        </ul>
+    </div>
+</div>
+
+<script>
+    const floating_btn = document.querySelector('.floating-btn');
+    const close_btn = document.querySelector('.close-btn');
+    const social_panel = document.querySelector('.social-panel-container');
+
+    floating_btn.addEventListener('click', () => {
+        social_panel.classList.toggle('visible');
+    });
+
+    close_btn.addEventListener('click', () => {
+        social_panel.classList.remove('visible');
+    });
+</script>
+{% endblock content %}

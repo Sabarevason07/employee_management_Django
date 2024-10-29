@@ -1,0 +1,43 @@
+{% include "header.html" %}
+<nav class="navbar navbar-inverse navbar-fixed-top">
+
+        <div class="navbar-header">                     
+            <a href="{% url 'main' %}" class="navbar-brand" ><i class="fa fa-users"></i> Employee Management</a>
+        </div>
+        <ul class="nav navbar-nav navbar-right">
+            {% if user.is_authenticated %}
+                <li><a href="{% url 'About' %}"><i class="fa fa-info-circle"></i> About</a></li>
+                <li><a href="{% url 'Home' %}"><i class="fa fa-home"></i> Home</a></li>
+                <li><a href="{% url 'Add_Employee' %}"><i class="fa fa-user-plus"></i> Create Profile</a></li>
+
+              
+               
+                {% if not user.is_superuser %}
+                <li><a href="{% url 'apply_leave' %}"><i class="fa fa-calendar-check-o"></i> Apply for Leave</a></li>
+                <li><a href="{% url 'leave_status' %}"><i class="fa fa-clock-o"></i> Leave Status</a></li>
+                <li><a href="{% url 'Profile' %}"><i class="fa fa-user"></i> Profile</a></li>
+                <li><a href="{% url 'task_list' %}">My Tasks</a>
+                </li>
+                {% endif %}
+                <li><a href="{% url 'attendance' %}"><i class="fa fa-clock-o"></i> Attendance</a></li>
+              
+
+                {% if user.is_superuser %}
+                    <li><a href="{% url 'assign_task' %}"> <i class="fa fa-comment"></i>Assign Task</a>
+                    <li><a href="{% url 'award_wages' %}"> <i class="fa fa-money"></i> Daily Wages</a>
+                    <li><a href="{% url 'Dashboard' %}"><i class="fa fa-dashboard"></i> Dashboard</a></li>
+                    <li><a href="{% url 'manage_leave_requests' %}"><i class="fa fa-tasks"></i> Manage Leave Requests</a></li>
+                {% endif %}
+            {% else %}
+                <li><a href="{% url 'admin:index' %}"><i class="fa fa-user"></i> Admin Login</a></li>
+                <li><a href="{% url 'Login' %}"><i class="fa fa-user"></i> User Login</a></li>
+                <li><a href="{% url 'Register' %}"><i class="fa fa-users"></i> Register</a></li>
+                
+            {% endif %}  
+         
+            {% if user.is_authenticated %}
+            <li><a href="{% url 'Logout' %}"><i class="fa fa-sign-out" aria-hidden="true"></i> Logout</a></li>
+            {% endif %}  
+        </ul>
+
+</nav>

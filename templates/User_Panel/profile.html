@@ -1,0 +1,119 @@
+{% extends "index.html" %}      
+{% block content %}     
+<div class="container-fluid" style="margin-top:100px;">
+    <div class="col-md-offset-4 col-md-4">   
+        {% if messages %}
+        {% for message in messages %}
+            <div class="alert alert-{{ message.tags }}">
+                {{ message }}
+            </div>
+        {% endfor %}
+        {% endif %}
+        {% if employee %}   
+        <table class="table table-bordered">                        
+            <tr>
+                <h3 class="text-primary page-header text-center">User Details</h3>
+            </tr>        
+              <tbody>
+                
+                <tr>
+                    <th scope="col">Profile Picture</th>
+                    <td>
+                        {% if employee.ProfilePicture %}
+                            <img src="{{ employee.ProfilePicture.url }}" alt="Profile Picture" class="img-thumbnail" style="width:150px; height:150px;">
+                        {% else %}
+                            No Profile Picture Uploaded
+                        {% endif %}
+                    </td>
+                </tr>
+                <tr>
+                    <th scope="col">Emp ID</th>
+                    <td>{{ employee.EmpId }}</td>
+                </tr>
+                <tr>
+                    <th scope="col">Email</th>
+                    <td>{{ employee.Email }}</td>
+                </tr>
+                <tr>
+                    <th scope="col">First Name</th>
+                    <td>{{ employee.FirstName }}</td>
+                </tr>
+                <tr>
+                    <th scope="col">Last Name</th>
+                    <td>{{ employee.LastName }}</td>
+                </tr>
+                <tr>
+                    <th scope="col">Age</th>
+                    <td>{{ employee.Age }}</td>
+                </tr>
+                <tr>
+                    <th scope="col">Department</th>
+                    <td>{{ employee.Department }}</td>
+                </tr>
+                <tr>
+                    <th scope="col">Address</th>
+                    <td>{{ employee.Address }}</td>
+                </tr>
+                <tr>
+                    <th scope="col">Net Salary</th>
+                    <td>{{ net_salary }}</td>
+                </tr>
+              </tbody>
+        </table>
+
+        <!-- New table for financial details -->
+        <h3 class="text-primary page-header text-center">Financial Details</h3>
+        <table class="table table-bordered">           
+            <tbody>
+                <tr>
+                    <th scope="col">CTC</th>
+                    <td>{{ employee.CTC }}</td>
+                </tr>
+                <tr>
+                    <th scope="col">Gross Salary</th>
+                    <td>{{ employee.GrossSalary }}</td>
+                </tr>
+                <tr>
+                    <th scope="col">Net Salary</th>
+                    <td>{{ net_salary }}</td>
+                </tr>
+            </tbody>
+        </table>
+                <!-- 'View My QR' Button and Modal -->
+                <button type="button" class="btn btn-info" >
+                    <a href="{% url 'qr_page' employee.id %}" class="btn btn-info">View My QR Code</a>
+                </button>
+        
+
+        {% if user.is_staff %}
+        <h5 class="text-primary">
+            Want to update details? Request admin ➡️ 
+            <form action="{% url 'send_request' %}" method="POST" style="display:inline;">
+                {% csrf_token %}
+                <input type="hidden" name="employee_id" value="{{ employee.id }}">
+                <button type="submit" class="btn btn-warning btn-sm">Request</button>
+            </form>
+        </h5>
+        {% else %}
+        <table class="table table-bordered">
+        <tbody>
+                
+            <tr>
+                <th scope="col">Username</th>
+                <td>{{ user.username }}</td>
+            </tr>
+            <tr>
+                <th scope="col">Email</th>
+                <td>{{ user.email }}</td>
+            </tr>
+        </tbody>
+    </table>
+    {% endif %}
+        {% endif %}
+    </div>      
+</div>  
+
+
+
+
+{% endblock %}

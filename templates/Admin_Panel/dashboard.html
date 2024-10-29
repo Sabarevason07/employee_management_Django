@@ -1,0 +1,239 @@
+{% extends 'index.html' %}
+{% include 'navbar.html' %}
+
+{% block title %}
+    Dashboard
+{% endblock title %}
+
+{% block content %}
+<div class="container mt-5">
+    <h4 class="page-header text-primary text-center mb-4">Users and Employees Dashboard</h4>
+
+    <!-- Card Section for Users and Employees -->
+    <div class="row text-center mb-4">
+        <!-- Total Users Card -->
+        <div class="col-md-6 mb-3">
+            <div class="card shadow-sm border-left-primary" onclick="toggleTable('usersTable')" style="margin-bottom: 5%;">
+                <div class="card-body">
+                    <div class="row align-items-center">
+                        <div class="col">
+                            <h5 class="card-title text-uppercase text-primary mb-1">Total Users</h5>
+                            <h3>{{ users.count }}</h3>
+                        </div>
+                        <div class="col-auto">
+                            <i class="fas fa-users fa-2x text-primary"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Total Employees Card -->
+        <div class="col-md-6 mb-3">
+            <div class="card shadow-sm border-left-success" onclick="toggleTable('employeesTable')">
+                <div class="card-body">
+                    <div class="row align-items-center">
+                        <div class="col">
+                            <h5 class="card-title text-uppercase text-success mb-1">Total Employees</h5>
+                            <h3>{{ employees.count }}</h3>
+                        </div>
+                        <div class="col-auto">
+                            <i class="fas fa-user-tie fa-2x text-success"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- User Table Section -->
+    <div id="usersTable" class="table-responsive mt-4" style="display:none;">
+        <h5 class="text-center">Users Table</h5>
+        <table class="table table-bordered table-striped">
+            <thead class="table-dark">
+                <tr>
+                    <th>#</th>
+                    <th>Email</th>
+                    <th>Username</th>
+                    <th>Last Login</th>
+                    <th>Join Date</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for message in messages %}
+                <div class="alert alert-{{ message.tags }}">
+                    {{ message }}
+                </div>
+                {% endfor %}
+                {% for user in users %}
+                <tr>
+                    <td>{{ forloop.counter }}</td>
+                    <td>{{ user.email }}</td>
+                    <td>{{ user.username }}</td>
+                    <td>{{ user.last_login|date:"d M Y H:i" }}</td>
+                    <td>{{ user.date_joined|date:"d M Y" }}</td>
+                    <td>
+                        <a href="/update_user/{{ user.id }}/" class="btn btn-sm btn-warning">Edit</a>
+                        <a href="/delete_user/{{ user.id }}/" class="btn btn-sm btn-danger">Delete</a>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+    <!-- Employee Table Section -->
+    <div id="employeesTable" class="table-responsive mt-4" style="display:none;">
+        <h5 class="text-center">Employees Table</h5>
+        <table class="table table-bordered table-striped">
+            <thead class="table-dark">
+                <tr>
+                    <th>#</th>
+                    <th>Email</th>
+                    <th>First Name</th>
+                    <th>Age</th>
+                    <th>CTC</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for employee in employees %}
+                <tr>
+                    <td>{{ forloop.counter }}</td>
+                    <td>{{ employee.Email }}</td>
+                    <td>{{ employee.FirstName }}</td>
+                    <td>{{ employee.Age }}</td>
+                    <td>{{ employee.CTC }}</td>
+                    <td>
+                        <a href="/update/{{ employee.id }}/" class="btn btn-sm btn-warning">Edit</a>
+                        <a href="/delete/{{ employee.id }}/" class="btn btn-sm btn-danger">Delete</a>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+    <!-- Charts Section -->
+    <div class="row mb-4">
+        <!-- Bar Chart for Salaries -->
+        <div class="col-md-6 mb-4">
+            <canvas id="salaryChart"></canvas>
+        </div>
+
+        <!-- Pie Chart for Employees by Department -->
+        <div class="col-md-6 mb-4">
+
+            <canvas id="departmentChart" style="max-width: 600px; margin: 0 auto;"></canvas>
+        </div>
+    </div>
+</div>
+
+<!-- Chart.js Library -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+<!-- FontAwesome Icons -->
+<script src="https://kit.fontawesome.com/a076d05399.js"></script>
+
+<!-- Bootstrap JavaScript -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+
+<!-- JavaScript to toggle visibility -->
+<script>
+function toggleTable(tableId) {
+    const userTable = document.getElementById('usersTable');
+    const employeeTable = document.getElementById('employeesTable');
+
+    if (tableId === 'usersTable') {
+        // Toggle Users Table and hide Employees Table
+        userTable.style.display = userTable.style.display === 'none' ? 'block' : 'none';
+        employeeTable.style.display = 'none';
+    } else if (tableId === 'employeesTable') {
+        // Toggle Employees Table and hide Users Table
+        employeeTable.style.display = employeeTable.style.display === 'none' ? 'block' : 'none';
+        userTable.style.display = 'none'; 
+    }
+}
+</script>
+
+<script>
+// Bar Chart for Salaries
+const ctx2 = document.getElementById('salaryChart').getContext('2d');
+const salaryChart = new Chart(ctx2, {
+    type: 'bar',
+    data: {
+        labels: [{% for employee in employees %}'{{ employee.FirstName }}', {% endfor %}'Average Salary'],
+        datasets: [{
+            label: 'Salaries',
+            data: [{% for employee in employees %}{{ employee.CTC }}, {% endfor %}{{ average_salary }}],
+            backgroundColor: 'rgba(75, 192, 192, 0.6)',
+            borderColor: 'rgba(75, 192, 192, 1)',
+            borderWidth: 1
+        }]
+    },
+    options: {
+        responsive: true,
+        scales: {
+            y: {
+                beginAtZero: true,
+                title: {
+                    display: true,
+                    text: 'Salary (CTC)'
+                }
+            }
+        },
+        plugins: {
+            legend: {
+                position: 'top',
+            },
+            title: {
+                display: true,
+                text: 'Employee Salary Distribution'
+            }
+        }
+    }
+});
+
+// Pie Chart for Employees by Department
+const ctx1 = document.getElementById('departmentChart').getContext('2d');
+const departmentData = {
+    labels: ['IT', 'HR', 'Finance', 'Marketing'], // Update with actual department labels
+    datasets: [{
+        label: 'Employees by Department',
+        data: [10, 5, 7, 3], // Replace with actual counts of employees in each department
+        backgroundColor: [
+            'rgba(255, 99, 132, 0.6)',
+            'rgba(54, 162, 235, 0.6)',
+            'rgba(255, 206, 86, 0.6)',
+            'rgba(75, 192, 192, 0.6)'
+        ],
+        borderColor: [
+            'rgba(255, 99, 132, 1)',
+            'rgba(54, 162, 235, 1)',
+            'rgba(255, 206, 86, 1)',
+            'rgba(75, 192, 192, 1)'
+        ],
+        borderWidth: 1
+    }]
+};
+
+const departmentChart = new Chart(ctx1, {
+    type: 'pie',
+    data: departmentData,
+    options: {
+        responsive: true,
+        plugins: {
+            legend: {
+                position: 'top',
+            },
+            title: {
+                display: true,
+                text: 'Employee Distribution by Department'
+            }
+        }
+    }
+});
+</script>
+
+{% endblock %}

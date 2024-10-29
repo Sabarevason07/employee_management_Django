@@ -1,0 +1,159 @@
+{% extends "index.html" %}
+{% block title %}
+ Attendance
+{% endblock %}
+{% load static %}
+{% block content %}
+
+<div class="center-container">
+
+    <button id="start-attendance" class="{% if user.is_staff and not user.is_superuser %} show {% else %} hide {% endif %}">Take Attendance</button>
+    <img src="{% static 'images/attendance.png' %}" alt="Description of image" width="100px" height="100px">
+    <div id="result"></div>
+    
+    <div id="attendance-table" class="{% if attendance_records %} show {% else %} hide {% endif %}">
+        <h2>Attendance Records</h2>
+        <table class="table table-bordered" id="attendance-records">
+            <thead>
+                <tr>
+                    <th>Name</th>
+                    <th>Time</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for record in attendance_records %}
+                    <tr>
+                        <td>{{ record.0 }}</td>
+                        <td>{{ record.1 }}</td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<style>
+    /* Body and container styles */
+    body {
+        background-color: #f1f1f1;
+        font-family: 'Arial', sans-serif;
+        margin: 0;
+        height: 100vh;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+    }
+
+    .center-container {
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        text-align: center;
+        background-color: white;
+        padding: 20px;
+        border-radius: 10px;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    }
+
+    /* Header styles */
+    h1, h2 {
+        font-family: 'Arial', sans-serif;
+        color: #333;
+        margin: 0 0 20px;
+    }
+
+    /* Button styling */
+    #start-attendance {
+        padding: 10px 20px;
+        font-size: 16px;
+        background-color: #28a745;
+        color: white;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+        transition: background-color 0.3s;
+        margin-bottom: 20px;
+    }
+
+    #start-attendance:hover {
+        background-color: #218838;
+    }
+
+    /* Table styles */
+    table {
+        width: 100%;
+        max-width: 600px;
+        border-collapse: collapse;
+        border-radius: 5px;
+        overflow: hidden;
+    }
+
+    th, td {
+        padding: 10px;
+        border: 1px solid #ddd;
+        text-align: center;
+    }
+
+    th {
+        background-color: #007bff;
+        color: white;
+    }
+
+    tr:hover {
+        background-color: #e9ecef;
+    }
+
+    /* Responsive adjustments */
+    @media (max-width: 768px) {
+        table {
+            width: 90%;
+        }
+    }
+
+    /* Visibility styles */
+    .hide {
+        display: none;
+    }
+    .show {
+        display: block;
+    }
+</style>
+
+<script>
+    $(document).ready(function() {
+        $("#start-attendance").click(function() {
+            $.ajax({
+                url: "{% url 'attendance' %}",  // URL for your attendance marking view
+                type: 'POST',
+                headers: {
+                    'X-CSRFToken': '{{ csrf_token }}',  // Include CSRF token for security
+                },
+                data: { 'name': '' }, 
+                success: function(data) {
+                    $("#result").text(data.status);
+
+                    // Check if attendance is marked successfully
+                    if (data.attendance && data.attendance.length > 0) {
+                        const attendanceRecords = data.attendance;
+                        const tbody = $("#attendance-records tbody");
+                        tbody.empty(); // Clear existing table data
+
+                        $.each(attendanceRecords, function(index, record) {
+                            const row = `<tr><td>${record[0]}</td><td>${record[1]}</td></tr>`;
+                            tbody.append(row);
+                        });
+
+                        // Show the table
+                        $("#attendance-table").removeClass("hide").addClass("show");
+                    }
+                },
+                error: function(error) {
+                    console.error('Error:', error);
+                    $("#result").text("Error marking attendance.");
+                }
+            });
+        });
+    });
+</script>
+{% endblock %}

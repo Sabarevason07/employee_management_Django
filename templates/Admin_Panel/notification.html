@@ -1,0 +1,44 @@
+
+{% extends "index.html" %}   
+{% load crispy_forms_tags %}
+
+{% block title %}
+Notification
+{% endblock title %}
+
+{% block content %}
+<div class="container-fluid" style="margin-top:100px;">
+	<div class="col-md-offset-2 col-md-8" >
+		<h2 class="text-primary page-header text-center">Your Notifications</h2>
+        <table class="table table-bordered">
+            <thead>
+                <tr>
+                    <th>Employee</th>
+                    <th>Message</th>
+                    <th>Date</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for notification in notifications %}
+                    <tr>
+                        <td>{{ notification.employee.FirstName }}</td>
+                        <td>{{ notification.message }}</td>
+                        <td>{{ notification.created_at }}</td>
+                    </tr>
+                {% empty %}
+                    <tr>
+                        <td colspan="3" class="text-center">No requests at this time.</td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+          <button class="btn btn-danger " onclick="run()" style=" margin-top: 10px; "><i class="fa fa-arrow-left"></i></button>
+	</div>	
+
+</div>
+<script>
+   function run() {
+        window.location.href = '/home';
+    }
+</script>
+{% endblock %}

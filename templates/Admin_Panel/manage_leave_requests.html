@@ -1,0 +1,49 @@
+{% extends "index.html" %}
+
+{% block title %}
+   Manage Leave
+{% endblock title %}
+
+{% block content %}
+<h3 class="page-header text-primary" style="padding-top: 10%; padding-left: 43%; display: flex;">Manage Leave Request</h3>
+<div class="d-flex justify-content-center pt-5">
+    <div class="col-md-offset-1 col-md-10">
+        <table class="table table-striped">
+            {% for message in messages %}
+            <div class="alert alert-{{ message.tags }}">
+                {{ message }}
+            </div>
+        {% endfor %}
+            <tr>
+                <th>Employee</th>
+                <th>Start Date</th>
+                <th>End Date</th>
+                <th>Reason</th>
+                <th>Status</th>
+                <th>Action</th>
+            </tr>
+            {% for leave in leave_requests %}
+            <tr {% if leave.status == 'Approved' %} class="table-success" {% elif leave.status == 'Rejected' %} class="table-danger" {% endif %}>
+                <td>{{ leave.employee.FirstName }} {{ leave.employee.LastName }}</td>
+                <td>{{ leave.start_date }}</td>
+                <td>{{ leave.end_date }}</td>
+                <td>{{ leave.reason }}</td>
+                <td>{{ leave.status }}</td>
+                <td>
+                    <form method="post" action="{% url 'approve_reject_leave' leave.id 'approve' %}">
+                        {% csrf_token %}
+                      
+                        <button type="submit">Approve</button>
+                    </form>
+                    <form method="post" action="{% url 'approve_reject_leave' leave.id 'reject' %}">
+                        {% csrf_token %}
+                        <textarea name="admin_comments" placeholder="Add comments..."></textarea>
+                        <button type="submit">Reject</button>
+                    </form>
+                </td>
+            </tr>
+            {% endfor %}
+        </table>
+    </div>
+</div>
+{% endblock content %}

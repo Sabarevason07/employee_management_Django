@@ -1,0 +1,85 @@
+{% extends "index.html" %}
+
+
+{% block title %}
+   Edit Employee 
+{% endblock title %}
+
+
+{% block content %}
+
+<div class="container-fluid well" style="padding-top: 2%;padding-left: 10%; padding-right: 10%;">
+    <div class="row">
+        <div class="col-12" >
+            <h3 class = "page-header text-primary" style="padding-top: 5%; padding-left: 43%; display: flex;">Update Employee</h3>
+            <form action="/update/{{data.id}}/" autocomplete="off" method="POST" enctype="multipart/form-data">
+                {% csrf_token %}
+
+                    <!-- Display current profile picture -->
+                    <div class="form-group">
+                      <label for="profilepicture">Current Profile Picture</label><br>
+                      {% if data.ProfilePicture %}
+                          <img src="{{ data.ProfilePicture.url }}" alt="Profile Picture" class="img-thumbnail" style="width:100px; height:100px;">
+                      {% else %}
+                          <p>No Profile Picture available.</p>
+                      {% endif %}
+                  </div>
+  
+                  <!-- File input for new profile picture -->
+                  <div class="form-group">
+                      <label for="profilepicture">Upload New Profile Picture</label>
+                      <input type="file" class="form-control-file" name="profilepicture" value="{{data.ProfilePicture}}">
+                  </div>
+              
+
+                  <div class="form-group">
+                    <label for="empid">Emp ID</label>
+                    <input type="number" class="form-control" placeholder="Enter Employee ID" name="empid" value="{{data.EmpId}}">
+                  </div>
+
+                  <div class="form-group">
+                    <label for="email">Email</label>
+                    <input type="email" class="form-control" placeholder="Enter mail ID" name="email" value="{{data.Email}}">
+                  </div>
+
+                  <div class="form-group">
+                    <label for="firstname">First Name</label>
+                    <input type="text" class="form-control" placeholder="Enter First Name" name="firstname" value="{{data.FirstName}}" >
+                  </div>
+
+                  <div class="form-group">
+                    <label for="lastname">Last Name</label>
+                    <input type="text" class="form-control" placeholder="Enter Last Name" name="lastname" value="{{data.LastName}}">
+                  </div>
+
+                  <div class="form-group">
+                    <label for="Age">Age</label>
+                    <input type="number" class="form-control" placeholder="Enter Age" name="age" value="{{data.Age}}">
+                  </div>
+
+                  <div class="form-group">
+                    <label for="department">Department</label>
+                    <input type="text" class="form-control" placeholder="Enter Department" name="department" value="{{data.Department}}">
+                  </div>
+
+                  <div class="form-group">
+                    <label for="address">Department</label>
+                    <input type="text" class="form-control" placeholder="Enter Address" name="address" value="{{data.Address}}">
+                  </div>
+                  <div class="form-group">
+                    <label for="ctc">CTC</label>
+                    <input type="number" name="CTC" class="form-control" value="{{data.CTC}}">
+                </div>
+                <div class="form-group">
+                    <label for="GrossSalary">GrossSalary</label>
+                    <input type="number" name="GrossSalary" class="form-control" value="{{data.GrossSalary}}">
+                </div>
+                <input type="submit" value="Update" style="background-color: rgb(22, 140, 213); color: white; margin-top: 10px; border-radius: 7px;">
+                <input type="reset" value="Reset" style="background-color: red; color: white; border-radius: 7px;">
+
+              </form>
+        </div>
+    </div>
+</div>
+
+{% endblock content %}
