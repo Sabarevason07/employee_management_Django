@@ -62,22 +62,22 @@
             </thead>
             <tbody>
                 {% for message in messages %}
-                <div class="alert alert-{{ message.tags }}">
-                    {{ message }}
-                </div>
+                    <div class="alert alert-{{ message.tags }}">
+                        {{ message }}
+                    </div>
                 {% endfor %}
                 {% for user in users %}
-                <tr>
-                    <td>{{ forloop.counter }}</td>
-                    <td>{{ user.email }}</td>
-                    <td>{{ user.username }}</td>
-                    <td>{{ user.last_login|date:"d M Y H:i" }}</td>
-                    <td>{{ user.date_joined|date:"d M Y" }}</td>
-                    <td>
-                        <a href="/update_user/{{ user.id }}/" class="btn btn-sm btn-warning">Edit</a>
-                        <a href="/delete_user/{{ user.id }}/" class="btn btn-sm btn-danger">Delete</a>
-                    </td>
-                </tr>
+                    <tr>
+                        <td>{{ forloop.counter }}</td>
+                        <td>{{ user.email }}</td>
+                        <td>{{ user.username }}</td>
+                        <td>{{ user.last_login|date:"d M Y H:i" }}</td>
+                        <td>{{ user.date_joined|date:"d M Y" }}</td>
+                        <td>
+                            <a href="/update_user/{{ user.id }}/" class="btn btn-sm btn-warning">Edit</a>
+                            <a href="/delete_user/{{ user.id }}/" class="btn btn-sm btn-danger">Delete</a>
+                        </td>
+                    </tr>
                 {% endfor %}
             </tbody>
         </table>
@@ -99,17 +99,17 @@
             </thead>
             <tbody>
                 {% for employee in employees %}
-                <tr>
-                    <td>{{ forloop.counter }}</td>
-                    <td>{{ employee.Email }}</td>
-                    <td>{{ employee.FirstName }}</td>
-                    <td>{{ employee.Age }}</td>
-                    <td>{{ employee.CTC }}</td>
-                    <td>
-                        <a href="/update/{{ employee.id }}/" class="btn btn-sm btn-warning">Edit</a>
-                        <a href="/delete/{{ employee.id }}/" class="btn btn-sm btn-danger">Delete</a>
-                    </td>
-                </tr>
+                    <tr>
+                        <td>{{ forloop.counter }}</td>
+                        <td>{{ employee.Email }}</td>
+                        <td>{{ employee.FirstName }}</td>
+                        <td>{{ employee.Age }}</td>
+                        <td>{{ employee.CTC }}</td>
+                        <td>
+                            <a href="/update/{{ employee.id }}/" class="btn btn-sm btn-warning">Edit</a>
+                            <a href="/delete/{{ employee.id }}/" class="btn btn-sm btn-danger">Delete</a>
+                        </td>
+                    </tr>
                 {% endfor %}
             </tbody>
         </table>
@@ -118,122 +118,197 @@
     <!-- Charts Section -->
     <div class="row mb-4">
         <!-- Bar Chart for Salaries -->
-        <div class="col-md-6 mb-4">
+        <div class="col-md-6">
             <canvas id="salaryChart"></canvas>
         </div>
 
-        <!-- Pie Chart for Employees by Department -->
-        <div class="col-md-6 mb-4">
+            <!-- Pie Chart for Leave Request Status -->
+            <div class="col-md-5 mb-5" style="padding-left: 5%;">
+                <canvas id="leaveStatusChart"></canvas>
+            </div>
 
-            <canvas id="departmentChart" style="max-width: 600px; margin: 0 auto;"></canvas>
+        <!-- Pie Chart for Employees by Department -->
+        <div class="col-md-6">
+            <canvas id="departmentChart"></canvas>
         </div>
+
+        <div class="col-md-6" style="padding-top: 5%;">
+            <canvas id="dailyWagesChart"></canvas>
+        </div>
+        
+
     </div>
 </div>
 
 <!-- Chart.js Library -->
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
-<!-- FontAwesome Icons -->
-<script src="https://kit.fontawesome.com/a076d05399.js"></script>
-
-<!-- Bootstrap JavaScript -->
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
-
-<!-- JavaScript to toggle visibility -->
 <script>
-function toggleTable(tableId) {
-    const userTable = document.getElementById('usersTable');
-    const employeeTable = document.getElementById('employeesTable');
+    function toggleTable(tableId) {
+        const userTable = document.getElementById('usersTable');
+        const employeeTable = document.getElementById('employeesTable');
 
-    if (tableId === 'usersTable') {
-        // Toggle Users Table and hide Employees Table
-        userTable.style.display = userTable.style.display === 'none' ? 'block' : 'none';
-        employeeTable.style.display = 'none';
-    } else if (tableId === 'employeesTable') {
-        // Toggle Employees Table and hide Users Table
-        employeeTable.style.display = employeeTable.style.display === 'none' ? 'block' : 'none';
-        userTable.style.display = 'none'; 
+        if (tableId === 'usersTable') {
+            // Toggle Users Table and hide Employees Table
+            userTable.style.display = userTable.style.display === 'none' ? 'block' : 'none';
+            employeeTable.style.display = 'none';
+        } else if (tableId === 'employeesTable') {
+            // Toggle Employees Table and hide Users Table
+            employeeTable.style.display = employeeTable.style.display === 'none' ? 'block' : 'none';
+            userTable.style.display = 'none'; 
+        }
     }
-}
-</script>
 
-<script>
-// Bar Chart for Salaries
-const ctx2 = document.getElementById('salaryChart').getContext('2d');
-const salaryChart = new Chart(ctx2, {
-    type: 'bar',
-    data: {
-        labels: [{% for employee in employees %}'{{ employee.FirstName }}', {% endfor %}'Average Salary'],
-        datasets: [{
-            label: 'Salaries',
-            data: [{% for employee in employees %}{{ employee.CTC }}, {% endfor %}{{ average_salary }}],
-            backgroundColor: 'rgba(75, 192, 192, 0.6)',
-            borderColor: 'rgba(75, 192, 192, 1)',
-            borderWidth: 1
-        }]
-    },
-    options: {
-        responsive: true,
-        scales: {
-            y: {
-                beginAtZero: true,
+    // Bar Chart for Salaries
+    const ctx2 = document.getElementById('salaryChart').getContext('2d');
+    const salaryChart = new Chart(ctx2, {
+        type: 'bar',
+        data: {
+            labels: [{% for employee in employees %}'{{ employee.FirstName }}', {% endfor %}'Average Salary'],
+            datasets: [{
+                label: 'Salaries',
+                data: [{% for employee in employees %}{{ employee.CTC }}, {% endfor %}{{ average_salary }}],
+                backgroundColor: 'rgba(75, 192, 192, 0.6)',
+                borderColor: 'rgba(75, 192, 192, 1)',
+                borderWidth: 1
+            }]
+        },
+        options: {
+            responsive: true,
+            scales: {
+                y: {
+                    beginAtZero: true,
+                    title: {
+                        display: true,
+                        text: 'Salary (CTC)'
+                    }
+                }
+            },
+            plugins: {
+                legend: {
+                    position: 'top',
+                },
                 title: {
                     display: true,
-                    text: 'Salary (CTC)'
+                    text: 'Employee Salary Distribution'
                 }
             }
+        }
+    });
+
+    // Pie Chart for Employees by Department
+    const ctx1 = document.getElementById('departmentChart').getContext('2d');
+    const departmentData = {
+        labels: [{% for dept in departments %}'{{ dept.Department }}', {% endfor %}],
+        datasets: [{
+            label: 'Employees by Department',
+            data: [{% for dept in departments %}{{ dept.count }}, {% endfor %}],
+            backgroundColor: [
+                'rgba(255, 99, 132, 0.6)',
+                'rgba(54, 162, 235, 0.6)',
+                'rgba(255, 206, 86, 0.6)',
+                'rgba(75, 192, 192, 0.6)'
+            ],
+            borderColor: [
+                'rgba(255, 99, 132, 1)',
+                'rgba(54, 162, 235, 1)',
+                'rgba(255, 206, 86, 1)',
+                'rgba(75, 192, 192, 1)'
+            ],
+            borderWidth: 1
+        }]
+    };
+
+    const departmentChart = new Chart(ctx1, {
+        type: 'pie',
+        data: departmentData,
+        options: {
+            responsive: true,
+            plugins: {
+                legend: {
+                    position: 'top',
+                },
+                title: {
+                    display: true,
+                    text: 'Employee Distribution by Department'
+                }
+            }
+        }
+    });
+
+    // Pie Chart for Leave Request Status
+    const ctx3 = document.getElementById('leaveStatusChart').getContext('2d');
+    const leaveStatusData = {
+        labels: [{% for status in leave_status_count %}'{{ status.status }}', {% endfor %}],
+        datasets: [{
+            label: 'Leave Request Status',
+            data: [{% for status in leave_status_count %}{{ status.status_count }}, {% endfor %}],
+            backgroundColor: [
+                'rgba(255, 99, 132, 0.6)',
+                'rgba(54, 162, 235, 0.6)',
+                'rgba(255, 206, 86, 0.6)'
+            ],
+            borderColor: [
+                'rgba(255, 99, 132, 1)',
+                'rgba(54, 162, 235, 1)',
+                'rgba(255, 206, 86, 1)'
+            ],
+            borderWidth: 1
+        }]
+    };
+
+    const leaveStatusChart = new Chart(ctx3, {
+        type: 'pie',
+        data: leaveStatusData,
+        options: {
+            responsive: true,
+            plugins: {
+                legend: {
+                    position: 'top',
+                },
+                title: {
+                    display: true,
+                    text: 'Leave Request Status Distribution'
+                }
+            }
+        }
+    });
+
+    const ctx = document.getElementById('dailyWagesChart').getContext('2d');
+    const dailyWagesChart = new Chart(ctx, {
+        type: 'line',
+        data: {
+            labels: [{% for date in daily_wages_dates %}'{{ date|date:"d M Y" }}', {% endfor %}],
+            datasets: [{
+                label: 'Daily Wages',
+                data: [{% for wage in daily_wages_amounts %}{{ wage }}, {% endfor %}],
+                borderColor: 'rgba(75, 192, 192, 1)',
+                backgroundColor: 'rgba(75, 192, 192, 0.2)',
+                fill: true,
+                tension: 0.1
+            }]
         },
-        plugins: {
-            legend: {
-                position: 'top',
+        options: {
+            responsive: true,
+            scales: {
+                y: {
+                    beginAtZero: true,
+                    title: {
+                        display: true,
+                        text: 'Amount (in Currency)'
+                    }
+                }
             },
-            title: {
-                display: true,
-                text: 'Employee Salary Distribution'
+            plugins: {
+                legend: {
+                    position: 'top',
+                },
+                title: {
+                    display: true,
+                    text: 'Daily Wages Over the Last 30 Days'
+                }
             }
         }
-    }
-});
-
-// Pie Chart for Employees by Department
-const ctx1 = document.getElementById('departmentChart').getContext('2d');
-const departmentData = {
-    labels: ['IT', 'HR', 'Finance', 'Marketing'], // Update with actual department labels
-    datasets: [{
-        label: 'Employees by Department',
-        data: [10, 5, 7, 3], // Replace with actual counts of employees in each department
-        backgroundColor: [
-            'rgba(255, 99, 132, 0.6)',
-            'rgba(54, 162, 235, 0.6)',
-            'rgba(255, 206, 86, 0.6)',
-            'rgba(75, 192, 192, 0.6)'
-        ],
-        borderColor: [
-            'rgba(255, 99, 132, 1)',
-            'rgba(54, 162, 235, 1)',
-            'rgba(255, 206, 86, 1)',
-            'rgba(75, 192, 192, 1)'
-        ],
-        borderWidth: 1
-    }]
-};
-
-const departmentChart = new Chart(ctx1, {
-    type: 'pie',
-    data: departmentData,
-    options: {
-        responsive: true,
-        plugins: {
-            legend: {
-                position: 'top',
-            },
-            title: {
-                display: true,
-                text: 'Employee Distribution by Department'
-            }
-        }
-    }
-});
+    });
 </script>
-
 {% endblock %}

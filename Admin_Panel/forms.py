@@ -2,6 +2,7 @@ from django.contrib.auth.models import User
 from django.contrib.auth.forms import UserCreationForm
 from django import forms
 from .models import Emp_Data,Task,DailyWages
+from .models import EmployeeFeedback
  
 #users forms  
 class CreateUserForm(UserCreationForm):
@@ -51,5 +52,13 @@ class AwardWagesForm(forms.ModelForm):
 class EmailForm(forms.Form):
    email = forms.EmailField(label='Enter your email')   
 
-
    
+
+class EmployeeFeedbackForm(forms.ModelForm):
+    class Meta:
+        model = EmployeeFeedback
+        fields = ['feedback_text', 'rating']
+        widgets = {
+            'feedback_text': forms.Textarea(attrs={'rows': 4, 'placeholder': 'Enter your feedback here...'}),
+            'rating': forms.Select()
+        }

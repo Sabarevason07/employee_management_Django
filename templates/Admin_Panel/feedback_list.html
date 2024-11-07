@@ -1,0 +1,88 @@
+{% extends "index.html" %}
+{% load crispy_forms_tags %}
+
+{% block title %}
+Feedback Analysis
+{% endblock title %}
+
+{% block content %}
+<div class="container-fluid" style="margin-top: 100px;">
+    <div class="col-md-offset-2 col-md-8">
+        <h2 class="text-primary text-center mb-4">Feedback Analysis</h2>
+
+        <!-- Feedback Details Table -->
+        <table class="table table-bordered">
+            <thead>
+                <tr>
+                    <th>Employee</th>
+                    <th>Feedback</th>
+                    <th>Rating</th>
+                    <th>Sentiment Level</th>
+                    <th>Submitted At</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for feedback in feedbacks %}
+                    <tr>
+                        <td>{{ feedback.employee.username }}</td>
+                        <td>{{ feedback.feedback_text }}</td>
+                        <td>{{ feedback.rating }}</td>
+                        <td>{{ feedback.sentiment_level }}</td>
+                        <td>{{ feedback.submitted_at }}</td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+
+        <!-- Circular Sentiment Level Visualization -->
+        <h4 class="text-center mt-4">Sentiment Distribution</h4>
+        <div class="row text-center">
+            <!-- Positive Sentiment -->
+            <div class="col-md-4">
+                <div class="circular-progress" style="--percentage: {{ sentiment_counts.Positive|default:0 }}; --color: #28a745;">
+                
+                    <p>Positive</p>
+                </div>
+            </div>
+            <!-- Neutral Sentiment -->
+            <div class="col-md-4">
+                <div class="circular-progress" style="--percentage: {{ sentiment_counts.Neutral|default:0 }}; --color: #ffc107;">
+                 
+                    <p>Neutral</p>
+                </div>
+            </div>
+            <!-- Negative Sentiment -->
+            <div class="col-md-4">
+                <div class="circular-progress" style="--percentage: {{ sentiment_counts.Negative|default:0 }}; --color: #dc3545;">
+                   
+                    <p>Negative</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Custom CSS for Circular Progress Bars -->
+<style>
+    .circular-progress {
+        width: 100px;
+        height: 100px;
+        border-radius: 50%;
+        background: conic-gradient(
+            var(--color) calc(var(--percentage) * 1%), 
+            #f0f0f0 0%
+        );
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        position: relative;
+        margin: 20px auto;
+    }
+
+    .circular-percentage {
+        position: absolute;
+        font-weight: bold;
+        font-size: 1.2em;
+    }
+</style>
+{% endblock %}

@@ -1,6 +1,6 @@
 from django.shortcuts import render,redirect,get_object_or_404
-from .models import Emp_Data,LeaveRequest,Task,DailyWages,Notification
-from .forms import CreateUserForm,TaskForm,AwardWagesForm
+from .models import Emp_Data,LeaveRequest,Task,DailyWages,Notification,EmployeeFeedback
+from .forms import CreateUserForm,TaskForm,AwardWagesForm,EmployeeFeedbackForm
 from django.contrib.auth.models import User
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
@@ -10,7 +10,7 @@ import cv2
 import numpy as np
 import os
 import csv
-from datetime import datetime,date
+from datetime import datetime,date, timedelta
 from django.conf import settings
 from django.http import JsonResponse
 from decimal import Decimal
@@ -19,8 +19,9 @@ from django.core.mail import send_mail
 import qrcode
 from io import BytesIO
 import base64
+from collections import Counter
 
-
+ 
 
 
 # Create your views here.
@@ -202,17 +203,41 @@ def main(request):
 def about(request):
     return render(request,'about.html')
 
-@login_required
+from django.db.models import Count, Avg,Sum
 def dashboard(request):
+    # Employee Salary Aggregation
     users = User.objects.all()  #fetch all users
-    mydata = Emp_Data.objects.all() #fetch all employees
-    average_salary = mydata.aggregate(Avg('CTC'))['CTC__avg'] or 0
+    employees = Emp_Data.objects.all()
+    total_employees = employees.count()
+    total_salary = employees.aggregate(total_salary=Sum('CTC'))['total_salary']
+    average_salary = total_salary / total_employees if total_employees > 0 else 0
+    end_date = datetime.today()
+    start_date = end_date - timedelta(days=30)
+    daily_wages = DailyWages.objects.filter(date__range=[start_date, end_date])
 
-    return render(request, 'dashboard.html', {
-        'users': users,
-        'employees': mydata,
+    # Prepare the data for the line chart (dates and wages)
+    dates = [wage.date for wage in daily_wages]
+    wages = [wage.wage_amount for wage in daily_wages]
+
+    # Department Aggregation
+    departments = Emp_Data.objects.values('Department').annotate(count=Count('Department'))
+
+    # LeaveRequest Aggregation
+    leave_status_count = LeaveRequest.objects.values('status').annotate(status_count=Count('status'))
+    
+    # Prepare context for template
+    context = {
+        'users':users,
+        'employees': employees,
+        'total_employees': total_employees,
         'average_salary': average_salary,
-    })
+        'departments': departments,
+        'leave_status_count': leave_status_count,
+        'daily_wages_dates': dates,
+        'daily_wages_amounts': wages,
+    }
+
+    return render(request, 'dashboard.html', context)
  
 @login_required
 def update_user(request,id):
@@ -513,3 +538,41 @@ def generate_qr_code(request, employee_id):
         'employee': employee,
         'qr_image_base64': qr_image_base64,
     })
+
+def visual(request):
+    return render(request,'visualization.html')
+
+
+@login_required
+def employee_feedback(request):
+    if request.method == "POST":
+        form = EmployeeFeedbackForm(request.POST)
+        if form.is_valid():
+            feedback = form.save(commit=False)
+            feedback.employee = request.user
+            feedback.save()
+            return redirect('employee_feedback')  
+    else:
+        form = EmployeeFeedbackForm()
+    return render(request, 'employee_feedback.html', {'form': form})
+
+def feedback_list(request):
+    feedbacks = EmployeeFeedback.objects.all().order_by('-submitted_at')
+    total_feedbacks = feedbacks.count()
+
+    # Calculate sentiment counts and percentages
+    sentiments = [feedback.sentiment_level for feedback in feedbacks]
+    sentiment_counts = Counter(sentiments)
+
+    sentiment_percentages = {
+        "Positive": (sentiment_counts.get("Positive", 0) / total_feedbacks) * 100 if total_feedbacks > 0 else 0,
+        "Neutral": (sentiment_counts.get("Neutral", 0) / total_feedbacks) * 100 if total_feedbacks > 0 else 0,
+        "Negative": (sentiment_counts.get("Negative", 0) / total_feedbacks) * 100 if total_feedbacks > 0 else 0,
+    }
+
+    context = {
+        'feedbacks': feedbacks,
+        'sentiment_counts': sentiment_percentages 
+    }
+
+    return render(request, 'feedback_list.html', context)

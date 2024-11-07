@@ -1,0 +1,30 @@
+{% extends "index.html" %} 
+
+{% block title %} 
+Employee Feedback
+{% endblock title %}
+
+{% block content %}		
+
+{% load crispy_forms_tags %}
+<div class="container-fluid" style="margin-top:100px;">
+	<div class="col-md-offset-4 col-md-4" >
+		<h2 class="text-primary page-header text-center">Submit Feedback</h2>
+	</div>	
+	<div class="col-md-offset-4 col-md-4 well">
+		<form method="POST" autocomplete="off">
+			{% csrf_token %}
+			{% if messages %}
+					{% for message in messages %}
+						<div class="alert alert-{{ message.tags }}">
+							{{ message }}
+						</div>
+					{% endfor %}
+			{% endif %}					
+			{{form|crispy}}						
+			<button type="submit">Submit Feedback</button>
+		</form>		
+	</div>		
+</div>	
+{% endblock %}	
+ 

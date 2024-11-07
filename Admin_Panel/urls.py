@@ -38,5 +38,9 @@ urlpatterns = [
     path('notifications/', views.notification, name='notify'),
 
      path('qr-page/<int:employee_id>/', views.generate_qr_code, name='qr_page'),
+     path('visual/', views.visual, name='visual'),
+
+    path('feedback/', views.employee_feedback, name='employee_feedback'),
+    path('feedback list/', views.feedback_list, name='feedback_list'),
 
 ]+static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
